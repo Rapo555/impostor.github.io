@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Juego del Impostor</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; background:#0b0b0f; color:#fff; }
+    .wrap { max-width: 560px; margin: 0 auto; padding: 18px; }
+    .card { background:#141422; border:1px solid #2a2a3c; border-radius: 16px; padding: 16px; margin: 14px 0; }
+    label { display:block; font-size: 14px; color:#cfcfe6; margin-bottom:6px; }
+    input { width:100%; padding:12px 12px; border-radius:12px; border:1px solid #2a2a3c; background:#0f0f18; color:#fff; font-size:16px; }
+    button { width:100%; padding:12px 12px; border-radius:12px; border:0; background:#5b5bff; color:#fff; font-size:16px; font-weight:700; cursor:pointer; }
+    button.secondary { background:#2a2a3c; }
+    .big { font-size: 22px; font-weight: 800; }
+    .muted { color:#b8b8d6; }
+    .row { display:flex; gap:10px; }
+    .row > * { flex:1; }
+    .hidden { display:none; }
+    .pill { display:inline-block; padding:6px 10px; border-radius:999px; background:#2a2a3c; color:#d9d9ff; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="big">Juego del Impostor</div>
+      <div class="muted">Configura jugadores y palabra. Luego pásale el teléfono a cada jugador para ver su rol.</div>
+    </div>
+
+    <div id="setup" class="card">
+      <label>Número de jugadores</label>
+      <input id="players" type="number" min="3" max="20" value="6" />
+
+      <div style="height:10px"></div>
+
+      <label>Palabra secreta</label>
+      <input id="word" type="text" placeholder="Ej. Tiburón" />
+
+      <div style="height:14px"></div>
+      <button id="btnStart">Iniciar reparto</button>
+      <div style="height:10px"></div>
+      <div class="muted">Tip: pon brillo alto y que nadie vea la pantalla 😉</div>
+    </div>
+
+    <div id="reveal" class="card hidden">
+      <div class="pill" id="counter">Jugador 1</div>
+      <div style="height:10px"></div>
+      <div class="big" id="msg">Listo</div>
+      <div style="height:14px"></div>
+
+      <div class="row">
+        <button class="secondary" id="btnShow">Ver rol</button>
+        <button class="secondary" id="btnHide" disabled>Ocultar</button>
+      </div>
+
+      <div style="height:10px"></div>
+      <button id="btnNext" disabled>Siguiente jugador</button>
+    </div>
+
+    <div id="final" class="card hidden">
+      <div class="big">¡Listo!</div>
+      <div class="muted">Ya todos vieron su rol.</div>
+      <div style="height:14px"></div>
+      <div class="big" id="starter"></div>
+      <div style="height:14px"></div>
+      <button class="secondary" id="btnRestart">Reiniciar</button>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    let n = 0;
+    let secretWord = "";
+    let impostorIndex = -1;   // 0..n-1
+    let i = 0;               // jugador actual 0..n
+    let starterIndex = -1;
+
+    function randInt(max) { return Math.floor(Math.random() * max); }
+
+    function resetUI() {
+      $("setup").classList.remove("hidden");
+      $("reveal").classList.add("hidden");
+      $("final").classList.add("hidden");
+      $("msg").textContent = "Listo";
+      $("btnShow").disabled = false;
+      $("btnHide").disabled = true;
+      $("btnNext").disabled = true;
+    }
+
+    function updateCounter() {
+      $("counter").textContent = `Jugador ${i + 1} de ${n}`;
+    }
+
+    function roleFor(idx) {
+      if (idx === impostorIndex) return "🚨 Eres el impostor";
+      return `✅ Tu palabra: ${secretWord}`;
+    }
+
+    $("btnStart").addEventListener("click", () => {
+      n = parseInt($("players").value || "0", 10);
+      secretWord = ($("word").value || "").trim();
+
+      if (!Number.isFinite(n) || n < 3) {
+        alert("Pon al menos 3 jugadores.");
+        return;
+      }
+      if (!secretWord) {
+        alert("Escribe una palabra secreta.");
+        return;
+      }
+
+      impostorIndex = randInt(n);
+      starterIndex = randInt(n);
+      i = 0;
+
+      $("setup").classList.add("hidden");
+      $("reveal").classList.remove("hidden");
+      updateCounter();
+      $("msg").textContent = "Pásale el teléfono a este jugador.";
+      $("btnShow").disabled = false;
+      $("btnHide").disabled = true;
+      $("btnNext").disabled = true;
+    });
+
+    $("btnShow").addEventListener("click", () => {
+      $("msg").textContent = roleFor(i);
+      $("btnShow").disabled = true;
+      $("btnHide").disabled = false;
+      $("btnNext").disabled = true;
+    });
+
+    $("btnHide").addEventListener("click", () => {
+      $("msg").textContent = "Rol oculto. Pásale el teléfono al siguiente.";
+      $("btnHide").disabled = true;
+      $("btnNext").disabled = false;
+    });
+
+    $("btnNext").addEventListener("click", () => {
+      i++;
+      if (i >= n) {
+        $("reveal").classList.add("hidden");
+        $("final").classList.remove("hidden");
+        $("starter").textContent = `Empieza: Jugador ${starterIndex + 1}`;
+        return;
+      }
+      updateCounter();
+      $("msg").textContent = "Pásale el teléfono a este jugador.";
+      $("btnShow").disabled = false;
+      $("btnHide").disabled = true;
+      $("btnNext").disabled = true;
+    });
+
+    $("btnRestart").addEventListener("click", () => {
+      $("word").value = "";
+      resetUI();
+    });
+
+    resetUI();
+  </script>
+</body>
+</html>
