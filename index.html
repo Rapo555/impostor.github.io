@@ -160,23 +160,113 @@ Tenis"></textarea>
 
     // ✅ Listas de palabras por categoría (edítalas a gusto)
     const WORDS = {
-      "Jugadores de fútbol": [
-        "Messi","Cristiano Ronaldo","Mbappé","Haaland","Neymar","Modrić","Benzema","Salah","De Bruyne","Lewandowski",
-        "Vinícius Jr.","Bellingham","Kane","Griezmann","Son Heung-min","Kvaratskhelia","Pedri","Gavi","Valverde","Courtois"
-      ],
+     "Jugadores de fútbol": [
+      "Messi","Cristiano Ronaldo","Mbappé","Haaland","Neymar","Modrić","Benzema","Salah","De Bruyne","Lewandowski",
+      "Vinícius Jr.","Bellingham","Kane","Griezmann","Son Heung-min","Kvaratskhelia","Pedri","Gavi","Valverde","Courtois",
+    
+      "Ronaldinho","Ronaldo Nazário","Zidane","Xavi","Iniesta","Pirlo","Beckham","Henry","Kaká","Shevchenko",
+      "Roberto Carlos","Cafu","Maldini","Nesta","Cannavaro","Buffon","Casillas","Van Dijk","Ramos","Piqué",
+    
+      "Alisson","Ederson","Ter Stegen","Oblak","Neuer","Keylor Navas","Donnarumma","Onana","Sommer","Maignan",
+    
+      "Rodri","Casemiro","Kimmich","Gündogan","Kroos","Rice","Mac Allister","Enzo Fernández","Bruno Fernandes","Bernardo Silva",
+      "Ödegaard","Szoboszlai","Frenkie de Jong","Tchouaméni","Camavinga","Zubimendi","Declan Rice","Xhaka","Milinković-Savić","Parejo",
+    
+      "Lautaro Martínez","Julián Álvarez","Osimhen","Vlahović","Isak","Morata","Rashford","Sancho","Saka","Foden",
+      "Dembélé","Coman","Gnabry","Sané","Luis Díaz","Raphinha","Rodrygo","Gabriel Jesus","Richarlison","Nkunku",
+    
+      "Di María","Dybala","James Rodríguez","Cuadrado","Alexis Sánchez","Arturo Vidal","Cavani","Suárez","Forlán","Godín",
+    
+      "Achraf Hakimi","João Cancelo","Trent Alexander-Arnold","Reece James","Theo Hernández","Alphonso Davies","Walker","Carvajal","Robertson","Araujo",
+    
+      "Yamal","Endrick","Estevão","Musiala","Wirtz","Adeyemi","Garnacho","Højlund","Zaire-Emery","Arda Güler"
+    ]
+
       "Personas famosas": [
-        "Taylor Swift","Bad Bunny","The Rock","Shakira","Ariana Grande","Lionel Messi","Kanye West","Billie Eilish","Drake","Zendaya",
-        "Leonardo DiCaprio","Dua Lipa","Selena Gomez","Tom Holland","Rihanna","Beyoncé","MrBeast","Keanu Reeves","Harry Styles","Cillian Murphy"
-      ],
+      "Taylor Swift","Bad Bunny","The Rock","Shakira","Ariana Grande","Lionel Messi","Kanye West","Billie Eilish","Drake","Zendaya",
+      "Leonardo DiCaprio","Dua Lipa","Selena Gomez","Tom Holland","Rihanna","Beyoncé","MrBeast","Keanu Reeves","Harry Styles","Cillian Murphy",
+    
+      "Justin Bieber","Ed Sheeran","Bruno Mars","The Weeknd","Lady Gaga","Miley Cyrus","Olivia Rodrigo","Sabrina Carpenter","Doja Cat","Katy Perry",
+      "Karol G","Peso Pluma","Feid","Anitta","Rosalía","J Balvin","Maluma","Ozuna","Nicki Minaj","Cardi B",
+    
+      "Cristiano Ronaldo","Kylian Mbappé","Neymar","Erling Haaland","Ronaldinho","David Beckham","LeBron James","Michael Jordan","Stephen Curry","Serena Williams",
+      "Rafael Nadal","Roger Federer","Usain Bolt","Simone Biles","Tom Brady","Patrick Mahomes","Shohei Ohtani","Lewis Hamilton","Max Verstappen","Checo Pérez",
+    
+      "Brad Pitt","Johnny Depp","Robert Downey Jr.","Chris Evans","Scarlett Johansson","Margot Robbie","Ryan Gosling","Emma Stone","Jennifer Lawrence","Anne Hathaway",
+      "Will Smith","Denzel Washington","Samuel L. Jackson","Pedro Pascal","Timothée Chalamet","Florence Pugh","Gal Gadot","Henry Cavill","Jason Momoa","Hugh Jackman",
+    
+      "Kim Kardashian","Kylie Jenner","Kendall Jenner","Kourtney Kardashian","Khloé Kardashian","Paris Hilton","Oprah Winfrey","Ellen DeGeneres","Jimmy Fallon","Trevor Noah",
+    
+      "Elon Musk","Jeff Bezos","Bill Gates","Mark Zuckerberg","Steve Jobs","Warren Buffett","Jack Ma","Sam Altman","Reed Hastings","Sundar Pichai",
+    
+      "PewDiePie","Ibai Llanos","AuronPlay","Rubius","Kai Cenat","IShowSpeed","Logan Paul","Jake Paul","Pokimane","Amouranth"
+    ]
+
       "Películas/Series": [
         "Stranger Things","Breaking Bad","Game of Thrones","Narcos","The Office","Friends","Dark","La Casa de Papel","The Boys","The Mandalorian",
-        "Harry Potter","Star Wars","Avengers","Titanic","Shrek","Toy Story","Interstellar","Inception","Joker","Spider-Man"
-      ],
+        "Harry Potter","Star Wars","Avengers","Titanic","Shrek","Toy Story","Interstellar","Inception","Joker","Spider-Man",
+      
+        "Better Call Saul","House of the Dragon","The Walking Dead","Peaky Blinders","Black Mirror","Vikings","Lost","Prison Break","The Sopranos","True Detective",
+        "Ozark","The Crown","Euphoria","The Last of Us","Wednesday","Chernobyl","Mindhunter","The Witcher","The Umbrella Academy","13 Reasons Why",
+      
+        "Breaking Bad: El Camino","Avatar","Avatar: The Way of Water","The Lord of the Rings","The Hobbit","Pirates of the Caribbean","Fast & Furious","Jurassic Park","Jurassic World","Transformers",
+        "Batman","The Dark Knight","Superman","Wonder Woman","Justice League","Deadpool","X-Men","Guardians of the Galaxy","Doctor Strange","Thor",
+      
+        "Gladiator","The Matrix","Fight Club","Forrest Gump","Pulp Fiction","The Godfather","The Godfather Part II","Scarface","Goodfellas","The Wolf of Wall Street",
+        "Django Unchained","Once Upon a Time in Hollywood","Oppenheimer","Barbie","Parasite","Whiplash","La La Land","The Shawshank Redemption","Seven","The Silence of the Lambs",
+      
+        "The Simpsons","Family Guy","Rick and Morty","South Park","BoJack Horseman","Arcane","Attack on Titan","Death Note","One Piece","Naruto",
+        "Dragon Ball Z","Pokémon","Avatar: The Last Airbender","The Big Bang Theory","How I Met Your Mother","Modern Family","Brooklyn Nine-Nine","Community","Parks and Recreation","Seinfeld"
+      ]
+
       "Animales": [
-        "Tiburón","Delfín","Pingüino","Jaguar","Elefante","Gorila","Águila","Tortuga","Pulpo","Zorro","Lobo","Oso","Camaleón","Caballo","Koala"
-      ],
+        "Tiburón","Delfín","Pingüino","Jaguar","Elefante","Gorila","Águila","Tortuga","Pulpo","Zorro","Lobo","Oso","Camaleón","Caballo","Koala",
+      
+        "León","Tigre","Leopardo","Puma","Pantera","Guepardo","Rinoceronte","Hipopótamo","Jirafa","Cebra",
+        "Búfalo","Antílope","Bisonte","Alce","Ciervo","Venado","Jabalí","Tapir","Okapi","Capibara",
+      
+        "Perro","Gato","Conejo","Hámster","Ratón","Rata","Hurón","Erizo","Cobaya","Chinchilla",
+        "Vaca","Toro","Oveja","Cabra","Cerdo","Burro","Mula","Llama","Alpaca","Camello",
+      
+        "Mono","Chimpancé","Orangután","Mandril","Lémur","Perezoso","Oso panda","Oso polar","Oso pardo","Mapache",
+        "Tejón","Nutria","Castor","Zorrillo","Mofeta","Comadreja","Mangosta","Suricata","Coatí","Tepezcuintle",
+      
+        "Águila calva","Halcón","Búho","Lechuza","Cóndor","Cuervo","Loro","Guacamaya","Cacatúa","Canario",
+        "Colibrí","Flamenco","Cisne","Pato","Ganso","Pavo real","Avestruz","Emú","Kiwi","Pelícano",
+      
+        "Serpiente","Cobra","Pitón","Boa","Víbora","Lagarto","Iguana","Dragón de Komodo","Gecko","Cocodrilo",
+        "Caimán","Alligator","Tortuga marina","Tortuga terrestre","Camaleón pantera","Salamandra","Ajolote","Rana","Sapo","Tritón",
+      
+        "Ballena","Orca","Narval","Manatí","Foca","León marino","Morsa","Tiburón blanco","Tiburón martillo","Mantarraya",
+        "Pez payaso","Pez globo","Pez espada","Atún","Salmón","Anguila","Caballito de mar","Estrella de mar","Erizo de mar","Medusa",
+      
+        "Mariposa","Abeja","Avispa","Hormiga","Escarabajo","Libélula","Grillo","Saltamontes","Mantis","Cucaracha",
+        "Araña","Tarántula","Escorpión","Alacrán","Caracol","Babosa","Lombriz","Ciempiés","Milpiés","Pulga"
+      ]
+
       "Objetos": [
-        "Celular","Audífonos","Mochila","Llaves","Control remoto","Cargador","Vaso","Lámpara","Silla","Laptop","Reloj","Gorra","Libro","Cámara"
+        "Celular","Audífonos","Mochila","Llaves","Control remoto","Cargador","Vaso","Lámpara","Silla","Laptop","Reloj","Gorra","Libro","Cámara",
+      
+        "Tablet","Mouse","Teclado","Monitor","Bocina","Micrófono","Power bank","Cable USB","Disco duro","Memoria USB",
+        "Router","Impresora","Escáner","Webcam","Smartwatch","Calculadora","Proyector","Consola","Joystick","VR headset",
+      
+        "Mesa","Escritorio","Sofá","Cama","Colchón","Almohada","Cobija","Cortina","Espejo","Cuadro",
+        "Estante","Librero","Cajón","Closet","Perchero","Zapatera","Repisa","Biombo","Alfombra","Tapete",
+      
+        "Plato","Taza","Cuchara","Tenedor","Cuchillo","Sartén","Olla","Cacerola","Licuadora","Batidora",
+        "Cafetera","Tostador","Horno","Microondas","Refrigerador","Congelador","Termo","Botella","Jarra","Colador",
+      
+        "Pluma","Lápiz","Borrador","Sacapuntas","Regla","Cuaderno","Agenda","Carpeta","Grapadora","Clips",
+        "Resaltador","Post-it","Corrector","Marcador","Papel","Calculadora científica","Portapapeles","Archivador","Etiqueta","Folder",
+      
+        "Playera","Sudadera","Chaqueta","Pantalón","Short","Falda","Vestido","Calcetines","Zapatos","Tenis",
+        "Sandalias","Botas","Cinturón","Cartera","Bolsa","Maleta","Bufanda","Guantes","Lentes","Sombrero",
+      
+        "Cepillo","Peine","Espejo de mano","Toalla","Jabón","Shampoo","Acondicionador","Crema","Desodorante","Perfume",
+        "Rastrillo","Secadora","Plancha de cabello","Cortaúñas","Pinzas","Algodón","Gel","Maquillaje","Protector solar","Botiquín",
+      
+        "Martillo","Desarmador","Pinzas","Taladro","Serrucho","Llave inglesa","Cinta métrica","Nivel","Clavos","Tornillos",
+        "Foco","Extensión","Multicontacto","Regleta","Cerradura","Candado","Caja","Caja fuerte","Escalera","Carretilla"
       ],
       "Lista personalizada": [] // se llena con textarea
     };
