@@ -6,10 +6,10 @@
   <title>Juego del Impostor</title>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; background:#0b0b0f; color:#fff; }
-    .wrap { max-width: 680px; margin: 0 auto; padding: 18px; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 18px; }
     .card { background:#141422; border:1px solid #2a2a3c; border-radius: 16px; padding: 16px; margin: 14px 0; }
     label { display:block; font-size: 14px; color:#cfcfe6; margin-bottom:6px; }
-    input, textarea {
+    input, textarea, select {
       width:100%; padding:12px 12px; border-radius:12px;
       border:1px solid #2a2a3c; background:#0f0f18; color:#fff; font-size:16px;
     }
@@ -42,7 +42,7 @@
     }
     .holdTitle{ font-size: 18px; font-weight: 800; margin-bottom: 6px; }
     .holdHint{ font-size: 14px; color:#b8b8d6; }
-    .holdMain{ font-size: 22px; font-weight: 900; line-height: 1.2; }
+    .holdMain{ font-size: 22px; font-weight: 900; line-height: 1.25; }
     .holdSub{ margin-top: 10px; font-size: 14px; color:#cfcfe6; }
     .danger{ color:#ff6b6b; }
     .ok{ color:#8affb1; }
@@ -57,22 +57,25 @@
     }
     .toggle input{ width:auto; }
     .disabledBox{ opacity:.55; }
+
+    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    @media (max-width: 640px){ .grid2{ grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
       <div class="big">Juego del Impostor</div>
-      <div class="muted">Escribe nombres (uno por línea) y la palabra. Luego pásale el teléfono a cada jugador para ver su rol.</div>
+      <div class="muted">Escribe nombres (uno por línea) y elige categoría. Luego pásale el teléfono a cada quien para ver su rol.</div>
     </div>
 
     <div id="setup" class="card">
       <label>Nombres (uno por línea)</label>
       <textarea id="names" placeholder="Ej.
-Rapo
-Piter
-Carnero
-Geret"></textarea>
+Víctor
+Ana
+Luis
+Sofía"></textarea>
 
       <div class="muted" style="margin-top:6px">
         Jugadores detectados: <b id="count">0</b> (mínimo 3).
@@ -89,10 +92,36 @@ Geret"></textarea>
         <span class="pill" id="impCountPill">Impostores: 1</span>
       </div>
 
-      <div style="height:10px"></div>
+      <div style="height:12px"></div>
 
-      <label>Palabra secreta</label>
-      <input id="word" type="text" placeholder="Ej. Tiburón" />
+      <div class="grid2">
+        <div>
+          <label>Categoría</label>
+          <select id="category"></select>
+          <div class="muted" style="margin-top:6px">
+            La palabra se elige al azar al iniciar.
+          </div>
+        </div>
+        <div>
+          <label>Palabra elegida</label>
+          <input id="pickedWord" type="text" readonly value="(se mostrará al iniciar)" />
+          <div class="muted" style="margin-top:6px">
+            (Solo para el host; los jugadores NO la ven aquí)
+          </div>
+        </div>
+      </div>
+
+      <div id="customBox" class="hidden" style="margin-top:12px">
+        <label>Lista personalizada (una palabra por línea)</label>
+        <textarea id="customWords" placeholder="Ej.
+Tiburón
+Helado
+Desierto
+Tenis"></textarea>
+        <div class="muted" style="margin-top:6px">
+          Se tomará una palabra al azar de aquí (mínimo 3).
+        </div>
+      </div>
 
       <div style="height:14px"></div>
       <button id="btnStart">Iniciar reparto</button>
@@ -129,6 +158,29 @@ Geret"></textarea>
   <script>
     const $ = (id) => document.getElementById(id);
 
+    // ✅ Listas de palabras por categoría (edítalas a gusto)
+    const WORDS = {
+      "Jugadores de fútbol": [
+        "Messi","Cristiano Ronaldo","Mbappé","Haaland","Neymar","Modrić","Benzema","Salah","De Bruyne","Lewandowski",
+        "Vinícius Jr.","Bellingham","Kane","Griezmann","Son Heung-min","Kvaratskhelia","Pedri","Gavi","Valverde","Courtois"
+      ],
+      "Personas famosas": [
+        "Taylor Swift","Bad Bunny","The Rock","Shakira","Ariana Grande","Lionel Messi","Kanye West","Billie Eilish","Drake","Zendaya",
+        "Leonardo DiCaprio","Dua Lipa","Selena Gomez","Tom Holland","Rihanna","Beyoncé","MrBeast","Keanu Reeves","Harry Styles","Cillian Murphy"
+      ],
+      "Películas/Series": [
+        "Stranger Things","Breaking Bad","Game of Thrones","Narcos","The Office","Friends","Dark","La Casa de Papel","The Boys","The Mandalorian",
+        "Harry Potter","Star Wars","Avengers","Titanic","Shrek","Toy Story","Interstellar","Inception","Joker","Spider-Man"
+      ],
+      "Animales": [
+        "Tiburón","Delfín","Pingüino","Jaguar","Elefante","Gorila","Águila","Tortuga","Pulpo","Zorro","Lobo","Oso","Camaleón","Caballo","Koala"
+      ],
+      "Objetos": [
+        "Celular","Audífonos","Mochila","Llaves","Control remoto","Cargador","Vaso","Lámpara","Silla","Laptop","Reloj","Gorra","Libro","Cámara"
+      ],
+      "Lista personalizada": [] // se llena con textarea
+    };
+
     let n = 0;
     let secretWord = "";
     let impostorIndices = new Set(); // set de indices impostores
@@ -142,7 +194,7 @@ Geret"></textarea>
     function randInt(max) { return Math.floor(Math.random() * max); }
 
     // Parse de nombres (uno por línea, elimina vacíos)
-    function parseNames(raw){
+    function parseLines(raw){
       return (raw || "")
         .split("\n")
         .map(s => s.trim())
@@ -211,9 +263,31 @@ Geret"></textarea>
       }
     }
 
+    function pickRandomWord(list){
+      return list[randInt(list.length)];
+    }
+
+    // --- UI Setup: categorías ---
+    function initCategories(){
+      const sel = $("category");
+      sel.innerHTML = "";
+      Object.keys(WORDS).forEach((k) => {
+        const opt = document.createElement("option");
+        opt.value = k;
+        opt.textContent = k;
+        sel.appendChild(opt);
+      });
+      sel.value = "Jugadores de fútbol";
+    }
+
+    function refreshCustomVisibility(){
+      const isCustom = $("category").value === "Lista personalizada";
+      $("customBox").classList.toggle("hidden", !isCustom);
+    }
+
     // --- UI setup: contar nombres y habilitar 2 impostores ---
     function refreshSetupUI(){
-      names = parseNames($("names").value);
+      names = parseLines($("names").value);
       n = names.length;
       $("count").textContent = String(n);
 
@@ -240,16 +314,35 @@ Geret"></textarea>
 
     $("names").addEventListener("input", refreshSetupUI);
     $("twoImpostors").addEventListener("change", refreshSetupUI);
+    $("category").addEventListener("change", () => { refreshCustomVisibility(); });
 
     $("btnStart").addEventListener("click", () => {
-      names = parseNames($("names").value);
+      names = parseLines($("names").value);
       n = names.length;
-      secretWord = ($("word").value || "").trim();
 
       if (n < 3) { alert("Pon al menos 3 nombres para jugar."); return; }
-      if (!secretWord) { alert("Escribe una palabra secreta."); return; }
 
       numImpostors = ($("twoImpostors").checked && n >= 5) ? 2 : 1;
+
+      // Elegir palabra al azar según categoría
+      const cat = $("category").value;
+      let pool = WORDS[cat] || [];
+
+      if (cat === "Lista personalizada") {
+        pool = parseLines($("customWords").value);
+        if (pool.length < 3) {
+          alert("En la lista personalizada pon al menos 3 palabras (una por línea).");
+          return;
+        }
+      } else {
+        if (!Array.isArray(pool) || pool.length === 0) {
+          alert("Esa categoría no tiene palabras. Edita el array WORDS en el código.");
+          return;
+        }
+      }
+
+      secretWord = pickRandomWord(pool);
+      $("pickedWord").value = secretWord; // solo para el host en setup
 
       pickImpostors(numImpostors);
       starterIndex = randInt(n);
@@ -277,7 +370,7 @@ Geret"></textarea>
     });
 
     $("btnRestart").addEventListener("click", () => {
-      $("word").value = "";
+      $("pickedWord").value = "(se mostrará al iniciar)";
       resetUI();
       refreshSetupUI();
     });
@@ -310,6 +403,8 @@ Geret"></textarea>
     });
 
     // init
+    initCategories();
+    refreshCustomVisibility();
     refreshSetupUI();
     resetUI();
   </script>
