@@ -13,7 +13,7 @@
       width:100%; padding:12px 12px; border-radius:12px;
       border:1px solid #2a2a3c; background:#0f0f18; color:#fff; font-size:16px;
     }
-    textarea { min-height: 120px; resize: vertical; }
+    textarea { min-height: 140px; resize: vertical; }
     button { width:100%; padding:12px 12px; border-radius:12px; border:0; background:#5b5bff; color:#fff; font-size:16px; font-weight:700; cursor:pointer; }
     button.secondary { background:#2a2a3c; }
     .big { font-size: 22px; font-weight: 800; }
@@ -46,29 +46,47 @@
     .holdSub{ margin-top: 10px; font-size: 14px; color:#cfcfe6; }
     .danger{ color:#ff6b6b; }
     .ok{ color:#8affb1; }
+
+    /* switch simple */
+    .switchRow{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:10px; }
+    .switchHint{ font-size: 13px; color:#b8b8d6; }
+    .toggle{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; border-radius:12px;
+      border:1px solid #2a2a3c; background:#0f0f18;
+    }
+    .toggle input{ width:auto; }
+    .disabledBox{ opacity:.55; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
       <div class="big">Juego del Impostor</div>
-      <div class="muted">Configura jugadores y palabra. Luego pásale el teléfono a cada jugador para ver su rol.</div>
+      <div class="muted">Escribe nombres (uno por línea) y la palabra. Luego pásale el teléfono a cada jugador para ver su rol.</div>
     </div>
 
     <div id="setup" class="card">
-      <label>Número de jugadores</label>
-      <input id="players" type="number" min="3" max="30" value="6" />
-
-      <div style="height:10px"></div>
-
       <label>Nombres (uno por línea)</label>
       <textarea id="names" placeholder="Ej.
 Víctor
 Ana
 Luis
 Sofía"></textarea>
+
       <div class="muted" style="margin-top:6px">
-        Si dejas esto vacío, usará “Jugador 1, Jugador 2…”. Si pones nombres, deben ser al menos la cantidad de jugadores.
+        Jugadores detectados: <b id="count">0</b> (mínimo 3).
+      </div>
+
+      <div class="switchRow" id="twoImpBox">
+        <div>
+          <div class="toggle">
+            <input id="twoImpostors" type="checkbox" />
+            <label for="twoImpostors" style="margin:0; color:#d9d9ff;">Jugar con 2 impostores</label>
+          </div>
+          <div class="switchHint" id="twoImpHint">Disponible a partir de 5 jugadores.</div>
+        </div>
+        <span class="pill" id="impCountPill">Impostores: 1</span>
       </div>
 
       <div style="height:10px"></div>
@@ -79,7 +97,7 @@ Sofía"></textarea>
       <div style="height:14px"></div>
       <button id="btnStart">Iniciar reparto</button>
       <div style="height:10px"></div>
-      <div class="muted">Tip: que cada quien mantenga presionado para ver su rol, y suelte para ocultarlo 😉</div>
+      <div class="muted">Tip: mantén presionado para ver tu rol, suelta para ocultarlo 😉</div>
     </div>
 
     <div id="reveal" class="card hidden">
@@ -113,26 +131,26 @@ Sofía"></textarea>
 
     let n = 0;
     let secretWord = "";
-    let impostorIndex = -1;   // 0..n-1
+    let impostorIndices = new Set(); // set de indices impostores
     let starterIndex = -1;
     let i = 0;                // jugador actual
     let names = [];           // lista de nombres
     let revealed = false;     // si está revelado (presionado)
     let lastTouch = 0;
+    let numImpostors = 1;
 
     function randInt(max) { return Math.floor(Math.random() * max); }
 
-    function getPlayerName(idx){
-      return (names[idx] && names[idx].trim()) ? names[idx].trim() : `Jugador ${idx + 1}`;
+    // Parse de nombres (uno por línea, elimina vacíos)
+    function parseNames(raw){
+      return (raw || "")
+        .split("\n")
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
     }
 
-    function resetUI() {
-      $("setup").classList.remove("hidden");
-      $("reveal").classList.add("hidden");
-      $("final").classList.add("hidden");
-      $("btnNext").disabled = true;
-      revealed = false;
-      renderHiddenState();
+    function getPlayerName(idx){
+      return (names[idx] && names[idx].trim()) ? names[idx].trim() : `Jugador ${idx + 1}`;
     }
 
     function updateCounter() {
@@ -142,7 +160,7 @@ Sofía"></textarea>
     }
 
     function roleFor(idx) {
-      if (idx === impostorIndex) return { text: "🚨 Eres el impostor", kind: "danger" };
+      if (impostorIndices.has(idx)) return { text: "🚨 Eres el impostor", kind: "danger" };
       return { text: `✅ Tu palabra: ${secretWord}`, kind: "ok" };
     }
 
@@ -166,7 +184,7 @@ Sofía"></textarea>
     function reveal(){
       if (revealed) return;
       revealed = true;
-      $("btnNext").disabled = true; // bloquea avanzar mientras se ve el rol
+      $("btnNext").disabled = true;
       renderRevealedState();
     }
 
@@ -174,32 +192,66 @@ Sofía"></textarea>
       if (!revealed) return;
       revealed = false;
       renderHiddenState();
-      $("btnNext").disabled = false; // ya puede pasar al siguiente
+      $("btnNext").disabled = false;
     }
 
-    // Parse de nombres (uno por línea, elimina vacíos)
-    function parseNames(raw){
-      return (raw || "")
-        .split("\n")
-        .map(s => s.trim())
-        .filter(s => s.length > 0);
+    function resetUI() {
+      $("setup").classList.remove("hidden");
+      $("reveal").classList.add("hidden");
+      $("final").classList.add("hidden");
+      $("btnNext").disabled = true;
+      revealed = false;
+      renderHiddenState();
     }
 
-    $("btnStart").addEventListener("click", () => {
-      n = parseInt($("players").value || "0", 10);
-      secretWord = ($("word").value || "").trim();
+    function pickImpostors(count){
+      impostorIndices = new Set();
+      while (impostorIndices.size < count) {
+        impostorIndices.add(randInt(n));
+      }
+    }
+
+    // --- UI setup: contar nombres y habilitar 2 impostores ---
+    function refreshSetupUI(){
       names = parseNames($("names").value);
+      n = names.length;
+      $("count").textContent = String(n);
 
-      if (!Number.isFinite(n) || n < 3) { alert("Pon al menos 3 jugadores."); return; }
-      if (!secretWord) { alert("Escribe una palabra secreta."); return; }
+      const canTwo = n >= 5;
+      const cb = $("twoImpostors");
+      const box = $("twoImpBox");
+      const hint = $("twoImpHint");
 
-      // Si dieron nombres, exigir suficientes
-      if (names.length > 0 && names.length < n) {
-        alert(`Pusiste ${names.length} nombres, pero elegiste ${n} jugadores. Agrega nombres o deja el campo vacío.`);
-        return;
+      if (!canTwo) {
+        cb.checked = false;
+        cb.disabled = true;
+        box.classList.add("disabledBox");
+        hint.textContent = "Disponible a partir de 5 jugadores.";
+        numImpostors = 1;
+      } else {
+        cb.disabled = false;
+        box.classList.remove("disabledBox");
+        hint.textContent = "Actívalo si quieren más caos 😈";
+        numImpostors = cb.checked ? 2 : 1;
       }
 
-      impostorIndex = randInt(n);
+      $("impCountPill").textContent = `Impostores: ${numImpostors}`;
+    }
+
+    $("names").addEventListener("input", refreshSetupUI);
+    $("twoImpostors").addEventListener("change", refreshSetupUI);
+
+    $("btnStart").addEventListener("click", () => {
+      names = parseNames($("names").value);
+      n = names.length;
+      secretWord = ($("word").value || "").trim();
+
+      if (n < 3) { alert("Pon al menos 3 nombres para jugar."); return; }
+      if (!secretWord) { alert("Escribe una palabra secreta."); return; }
+
+      numImpostors = ($("twoImpostors").checked && n >= 5) ? 2 : 1;
+
+      pickImpostors(numImpostors);
       starterIndex = randInt(n);
       i = 0;
       revealed = false;
@@ -227,6 +279,7 @@ Sofía"></textarea>
     $("btnRestart").addEventListener("click", () => {
       $("word").value = "";
       resetUI();
+      refreshSetupUI();
     });
 
     // --- HOLD TO REVEAL (mouse + touch) ---
@@ -256,6 +309,8 @@ Sofía"></textarea>
       if (Date.now() - lastTouch < 600) { e.preventDefault(); return; }
     });
 
+    // init
+    refreshSetupUI();
     resetUI();
   </script>
 </body>
