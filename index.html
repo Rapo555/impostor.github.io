@@ -161,46 +161,130 @@ Tenis"></textarea>
     // ✅ Listas de palabras por categoría (edítalas a gusto)
     const WORDS = {
      "Jugadores de fútbol": [
-      "Messi","Cristiano Ronaldo","Mbappé","Haaland","Neymar","Modrić","Benzema","Salah","De Bruyne","Lewandowski",
-      "Vinícius Jr.","Bellingham","Kane","Griezmann","Son Heung-min","Kvaratskhelia","Pedri","Gavi","Valverde","Courtois",
+      "Messi","Cristiano Ronaldo","Kylian Mbappé","Erling Haaland","Neymar","Luka Modrić","Karim Benzema","Mohamed Salah","Kevin De Bruyne","Robert Lewandowski",
+      "Vinícius Jr.","Jude Bellingham","Harry Kane","Antoine Griezmann","Son Heung-min","Khvicha Kvaratskhelia","Pedri","Gavi","Federico Valverde","Thibaut Courtois",
     
-      "Ronaldinho","Ronaldo Nazário","Zidane","Xavi","Iniesta","Pirlo","Beckham","Henry","Kaká","Shevchenko",
-      "Roberto Carlos","Cafu","Maldini","Nesta","Cannavaro","Buffon","Casillas","Van Dijk","Ramos","Piqué",
+      "Ronaldinho","Ronaldo Nazário","Zinedine Zidane","Xavi","Andrés Iniesta","Andrea Pirlo","David Beckham","Thierry Henry","Kaká","Andriy Shevchenko",
+      "Roberto Carlos","Cafu","Paolo Maldini","Alessandro Nesta","Fabio Cannavaro","Gianluigi Buffon","Iker Casillas","Virgil van Dijk","Sergio Ramos","Gerard Piqué",
     
-      "Alisson","Ederson","Ter Stegen","Oblak","Neuer","Keylor Navas","Donnarumma","Onana","Sommer","Maignan",
+      "Alisson","Ederson","Marc-André ter Stegen","Jan Oblak","Manuel Neuer","Keylor Navas","Gianluigi Donnarumma","André Onana","Yann Sommer","Mike Maignan",
     
-      "Rodri","Casemiro","Kimmich","Gündogan","Kroos","Rice","Mac Allister","Enzo Fernández","Bruno Fernandes","Bernardo Silva",
-      "Ödegaard","Szoboszlai","Frenkie de Jong","Tchouaméni","Camavinga","Zubimendi","Declan Rice","Xhaka","Milinković-Savić","Parejo",
+      "Rodri","Casemiro","Joshua Kimmich","Ilkay Gündogan","Toni Kroos","Declan Rice","Alexis Mac Allister","Enzo Fernández","Bruno Fernandes","Bernardo Silva",
+      "Martin Ødegaard","Dominik Szoboszlai","Frenkie de Jong","Aurélien Tchouaméni","Eduardo Camavinga","Martin Zubimendi","Granit Xhaka","Sergej Milinković-Savić","Dani Parejo",
     
-      "Lautaro Martínez","Julián Álvarez","Osimhen","Vlahović","Isak","Morata","Rashford","Sancho","Saka","Foden",
-      "Dembélé","Coman","Gnabry","Sané","Luis Díaz","Raphinha","Rodrygo","Gabriel Jesus","Richarlison","Nkunku",
+      "Lautaro Martínez","Julián Álvarez","Victor Osimhen","Dušan Vlahović","Alexander Isak","Álvaro Morata","Marcus Rashford","Jadon Sancho","Bukayo Saka","Phil Foden",
+      "Ousmane Dembélé","Kingsley Coman","Serge Gnabry","Leroy Sané","Luis Díaz","Raphinha","Rodrygo","Gabriel Jesus","Richarlison","Christopher Nkunku",
     
-      "Di María","Dybala","James Rodríguez","Cuadrado","Alexis Sánchez","Arturo Vidal","Cavani","Suárez","Forlán","Godín",
+      "Ángel Di María","Paulo Dybala","James Rodríguez","Juan Guillermo Cuadrado","Alexis Sánchez","Arturo Vidal","Edinson Cavani","Luis Suárez","Diego Forlán","Diego Godín",
     
-      "Achraf Hakimi","João Cancelo","Trent Alexander-Arnold","Reece James","Theo Hernández","Alphonso Davies","Walker","Carvajal","Robertson","Araujo",
+      "Achraf Hakimi","João Cancelo","Trent Alexander-Arnold","Reece James","Theo Hernández","Alphonso Davies","Kyle Walker","Dani Carvajal","Andrew Robertson","Ronald Araújo",
     
-      "Yamal","Endrick","Estevão","Musiala","Wirtz","Adeyemi","Garnacho","Højlund","Zaire-Emery","Arda Güler"
+      "Lamine Yamal","Endrick","Estevão","Jamal Musiala","Florian Wirtz","Karim Adeyemi","Alejandro Garnacho","Rasmus Højlund","Warren Zaïre-Emery","Arda Güler",
+    
+      "Kai Havertz","Gabriel Martinelli","Thomas Partey","William Saliba","Gabriel Magalhães","Ben White","David Raya",
+      "Cole Palmer","Moisés Caicedo","Conor Gallagher","Nicolas Jackson","Marc Cucurella","Thiago Silva","Levi Colwill","Mykhailo Mudryk",
+    
+      "Bruno Guimarães","Anthony Gordon","Kieran Trippier","Sven Botman","Nick Pope","Callum Wilson","James Maddison",
+      "Dominic Solanke","Jarrod Bowen","Lucas Paquetá","Mohammed Kudus","James Ward-Prowse","Ollie Watkins","Douglas Luiz","Youri Tielemans",
+      "Emiliano Martínez","John McGinn",
+    
+      "Jack Grealish","Jérémy Doku","Rúben Dias","John Stones",
+      "Darwin Núñez","Diogo Jota","Cody Gakpo",
+    
+      "Andriy Lunin","Antonio Rüdiger","David Alaba","Éder Militão","Nacho Fernández","Ferland Mendy","Fran García","Dani Ceballos","Brahim Díaz","Joselu",
+      "Iñaki Peña","Jules Koundé","Andreas Christensen","Pau Cubarsí","Alejandro Balde","Fermín López","João Félix",
+    
+      "José María Giménez","Axel Witsel","Reinildo Mandava","Nahuel Molina","Marcos Llorente","Koke","Rodrigo De Paul","Samuel Lino","Ángel Correa",
+      "Isco","Nabil Fekir","Ayoze Pérez","Borja Iglesias","Takefusa Kubo","Mikel Oyarzabal","Brais Méndez","Álex Baena",
+    
+      "Marcus Thuram","Hakan Çalhanoğlu","Nicolò Barella","Alessandro Bastoni","Federico Dimarco","Denzel Dumfries","Benjamin Pavard","Henrikh Mkhitaryan",
+      "Rafael Leão","Olivier Giroud","Christian Pulisic","Fikayo Tomori","Ismaël Bennacer","Tijjani Reijnders","Davide Calabria","Simon Kjær",
+      "Piotr Zieliński","Stanislav Lobotka","Giovanni Di Lorenzo","Alex Meret","Amir Rrahmani",
+      "Federico Chiesa","Adrien Rabiot","Manuel Locatelli","Bremer","Danilo","Wojciech Szczęsny","Paul Pogba",
+      "Romelu Lukaku","Lorenzo Pellegrini","Gianluca Mancini","Leonardo Spinazzola","Chris Smalling",
+      "Ciro Immobile","Luis Alberto","Mattia Zaccagni","Ivan Provedel",
+    
+      "Leon Goretzka","Thomas Müller","Matthijs de Ligt","Dayot Upamecano","Kim Min-jae",
+      "Jeremie Frimpong","Alejandro Grimaldo","Jonathan Tah","Marco Reus","Julian Brandt","Mats Hummels","Niklas Süle",
+      "Donyell Malen","Loïs Openda","Xavi Simons","Benjamin Šeško","Peter Gulácsi","Randal Kolo Muani","Mario Götze","Kevin Trapp",
+    
+      "Marquinhos","Milan Škriniar","Lucas Hernández","Nuno Mendes","Vitinha","Marco Verratti","Gonçalo Ramos","Bradley Barcola",
+      "Alexandre Lacazette","Corentin Tolisso","Duje Ćaleta-Car","Jonathan David","Benjamin André",
+      "Wissam Ben Yedder","Takumi Minamino",
+    
+      "João Palhinha","Rafael Leão","Diogo Costa","Pepe",
+      "Cristian Romero","Lisandro Martínez","Nicolás Otamendi",
+      "Giorgian De Arrascaeta","Radamel Falcao","Davinson Sánchez",
+      "Hirving Lozano","Raúl Jiménez","Santiago Giménez","Edson Álvarez","Guillermo Ochoa","Julián Quiñones","Jesús Corona","Héctor Herrera",
+    
+      "Pelé","Diego Maradona","Johan Cruyff","Franz Beckenbauer","Gerd Müller","Michel Platini","Eusébio","Ferenc Puskás","Alfredo Di Stéfano","George Best",
+      "Lev Yashin","Paolo Rossi","Bobby Charlton","Zico","Sócrates","Romário","Rivaldo","Roberto Baggio","Marco van Basten","Ruud Gullit",
+      "Frank Rijkaard","Dennis Bergkamp","Eric Cantona","Ryan Giggs","Paul Scholes","Roy Keane","Steven Gerrard","Frank Lampard","Didier Drogba","Samuel Eto'o",
+      "Franco Baresi","Carlos Alberto","Daniel Passarella","Javier Zanetti","Juan Román Riquelme",
+      "Hugo Sánchez","Cuauhtémoc Blanco","Rafa Márquez","Jared Borgetti","Claudio Suárez","Luis Hernández",
+      "Oliver Kahn","Philipp Lahm","Bastian Schweinsteiger","Miroslav Klose","Lothar Matthäus","Zlatan Ibrahimović","David Villa","Fernando Torres",
+      "Xabi Alonso","Sergio Busquets","Carles Puyol","Marcelo","Dani Alves","Patrick Vieira","Claude Makélélé",
+      "Ruud van Nistelrooy","Arjen Robben","Franck Ribéry"
     ],
 
+
       "Personas famosas": [
-      "Taylor Swift","Bad Bunny","The Rock","Shakira","Ariana Grande","Lionel Messi","Kanye West","Billie Eilish","Drake","Zendaya",
-      "Leonardo DiCaprio","Dua Lipa","Selena Gomez","Tom Holland","Rihanna","Beyoncé","MrBeast","Keanu Reeves","Harry Styles","Cillian Murphy",
-    
-      "Justin Bieber","Ed Sheeran","Bruno Mars","The Weeknd","Lady Gaga","Miley Cyrus","Olivia Rodrigo","Sabrina Carpenter","Doja Cat","Katy Perry",
-      "Karol G","Peso Pluma","Feid","Anitta","Rosalía","J Balvin","Maluma","Ozuna","Nicki Minaj","Cardi B",
-    
-      "Cristiano Ronaldo","Kylian Mbappé","Neymar","Erling Haaland","Ronaldinho","David Beckham","LeBron James","Michael Jordan","Stephen Curry","Serena Williams",
-      "Rafael Nadal","Roger Federer","Usain Bolt","Simone Biles","Tom Brady","Patrick Mahomes","Shohei Ohtani","Lewis Hamilton","Max Verstappen","Checo Pérez",
-    
-      "Brad Pitt","Johnny Depp","Robert Downey Jr.","Chris Evans","Scarlett Johansson","Margot Robbie","Ryan Gosling","Emma Stone","Jennifer Lawrence","Anne Hathaway",
-      "Will Smith","Denzel Washington","Samuel L. Jackson","Pedro Pascal","Timothée Chalamet","Florence Pugh","Gal Gadot","Henry Cavill","Jason Momoa","Hugh Jackman",
-    
-      "Kim Kardashian","Kylie Jenner","Kendall Jenner","Kourtney Kardashian","Khloé Kardashian","Paris Hilton","Oprah Winfrey","Ellen DeGeneres","Jimmy Fallon","Trevor Noah",
-    
-      "Elon Musk","Jeff Bezos","Bill Gates","Mark Zuckerberg","Steve Jobs","Warren Buffett","Jack Ma","Sam Altman","Reed Hastings","Sundar Pichai",
-    
-      "PewDiePie","Ibai Llanos","AuronPlay","Rubius","Kai Cenat","IShowSpeed","Logan Paul","Jake Paul","Pokimane","Amouranth"
-    ],
+        "Taylor Swift","Bad Bunny","The Rock","Shakira","Ariana Grande","Lionel Messi","Kanye West","Billie Eilish","Drake","Zendaya",
+        "Leonardo DiCaprio","Dua Lipa","Selena Gomez","Tom Holland","Rihanna","Beyoncé","MrBeast","Keanu Reeves","Harry Styles","Cillian Murphy",
+      
+        "Justin Bieber","Ed Sheeran","Bruno Mars","The Weeknd","Lady Gaga","Miley Cyrus","Olivia Rodrigo","Sabrina Carpenter","Doja Cat","Katy Perry",
+        "Karol G","Peso Pluma","Feid","Anitta","Rosalía","J Balvin","Maluma","Ozuna","Nicki Minaj","Cardi B",
+      
+        "Cristiano Ronaldo","Kylian Mbappé","Neymar","Erling Haaland","Ronaldinho","David Beckham","LeBron James","Michael Jordan","Stephen Curry","Serena Williams",
+        "Rafael Nadal","Roger Federer","Usain Bolt","Simone Biles","Tom Brady","Patrick Mahomes","Shohei Ohtani","Lewis Hamilton","Max Verstappen","Checo Pérez",
+      
+        "Brad Pitt","Johnny Depp","Robert Downey Jr.","Chris Evans","Scarlett Johansson","Margot Robbie","Ryan Gosling","Emma Stone","Jennifer Lawrence","Anne Hathaway",
+        "Will Smith","Denzel Washington","Samuel L. Jackson","Pedro Pascal","Timothée Chalamet","Florence Pugh","Gal Gadot","Henry Cavill","Jason Momoa","Hugh Jackman",
+      
+        "Kim Kardashian","Kylie Jenner","Kendall Jenner","Kourtney Kardashian","Khloé Kardashian","Paris Hilton","Oprah Winfrey","Ellen DeGeneres","Jimmy Fallon","Trevor Noah",
+      
+        "Elon Musk","Jeff Bezos","Bill Gates","Mark Zuckerberg","Steve Jobs","Warren Buffett","Jack Ma","Sam Altman","Reed Hastings","Sundar Pichai",
+      
+        "PewDiePie","Ibai Llanos","AuronPlay","Rubius","Kai Cenat","IShowSpeed","Logan Paul","Jake Paul","Pokimane","Amouranth",
+      
+        // --- Cantantes / Música global ---
+        "Adele","Lana Del Rey","SZA","Halsey","Lorde","Camila Cabello","Shawn Mendes","Charlie Puth","Sam Smith","BTS",
+        "Jungkook","RM","Jimin","V","BLACKPINK","Jennie","Lisa","Rosé","Jisoo","IU",
+        "Post Malone","Lil Nas X","Travis Scott","Future","Playboi Carti","Tyler, The Creator","Frank Ocean","Childish Gambino","A$AP Rocky","21 Savage",
+        "Bizarrap","Nathy Peluso","C. Tangana","Quevedo","Rauw Alejandro","Myke Towers","Eladio Carrión","Mora","Young Miko","Tokischa",
+      
+        // --- DJs / Electrónica ---
+        "David Guetta","Calvin Harris","Martin Garrix","Tiësto","Armin van Buuren","Deadmau5","Skrillex","Diplo","Marshmello","Zedd",
+        "Steve Aoki","Afrojack","Alesso","Illenium","Avicii","Peggy Gou","Charlotte de Witte","Amelie Lens","Anyma","Fred again..",
+      
+        // --- Actores / Cine / Series ---
+        "Al Pacino","Robert De Niro","Joe Pesci","Marlon Brando","Jack Nicholson","Christian Bale","Joaquin Phoenix","Jared Leto","Benedict Cumberbatch","Tom Hanks",
+        "Matthew McConaughey","Ryan Reynolds","Jake Gyllenhaal","Adam Driver","Daniel Day-Lewis","Robert Pattinson","Andrew Garfield","Paul Mescal","Barry Keoghan","Oscar Isaac",
+        "Natalie Portman","Keira Knightley","Charlize Theron","Emily Blunt","Anya Taylor-Joy","Millie Bobby Brown","Sydney Sweeney","Jenna Ortega","Hailee Steinfeld","Saoirse Ronan",
+      
+        // --- Streamers / YouTube / Creadores ---
+        "MrBeast Gaming","Dream","GeorgeNotFound","Sapnap","Ludwig","xQc","Adin Ross","Ninja","Shroud","Valkyrae",
+        "ElMariana","Rivers","JuanSGuarnizo","Quackity","TheGrefg","Fernanfloo","Luisito Comunica","Dross","Auron","Pato Horneado",
+      
+        // --- Influencers / Redes ---
+        "Chiara Ferragni","Addison Rae","Charli D'Amelio","Bella Poarch","Alexis Ren","Lele Pons","Juanpa Zurita","Domelipa","Kuno","Kim Loaiza",
+        "Wendy Guevara","Kunno","Nicole Figueroa","Naim Darrechi","Zorrito Youtubero","Bryan Villegas",
+      
+        // --- Empresarios / Tech / Cultura ---
+        "Tim Cook","Satya Nadella","Jensen Huang","Larry Page","Sergey Brin","Michael Bloomberg","Carlos Slim","Bernard Arnault","Elon Musk Jr.",
+        "Mr Wonderful","Peter Thiel","Naval Ravikant","Reid Hoffman","Marc Benioff","Daniel Ek",
+      
+        // --- Deportistas (más variedad) ---
+        "Kobe Bryant","Shaquille O'Neal","Giannis Antetokounmpo","Luka Dončić","Nikola Jokic","Kevin Durant","James Harden","Russell Westbrook","Kyrie Irving","Damian Lillard",
+        "Conor McGregor","Khabib Nurmagomedov","Jon Jones","Israel Adesanya","Alex Pereira","Francis Ngannou",
+        "Naomi Osaka","Iga Swiatek","Carlos Alcaraz","Jannik Sinner","Novak Djokovic","Andy Murray",
+        "Fernando Alonso","Sebastian Vettel","George Russell","Lando Norris","Charles Leclerc","Daniel Ricciardo",
+      
+        // --- Extra para confundir en el impostor ---
+        "Barack Obama","Donald Trump","Joe Biden","Justin Trudeau","Emmanuel Macron","Volodymyr Zelenskyy",
+        "Greta Thunberg","Malala Yousafzai","Stephen Hawking","Neil deGrasse Tyson","Jordan Peterson","Yuval Noah Harari"
+      ],
+
 
       "Películas/Series": [
         "Stranger Things","Breaking Bad","Game of Thrones","Narcos","The Office","Friends","Dark","La Casa de Papel","The Boys","The Mandalorian",
@@ -216,7 +300,42 @@ Tenis"></textarea>
         "Django Unchained","Once Upon a Time in Hollywood","Oppenheimer","Barbie","Parasite","Whiplash","La La Land","The Shawshank Redemption","Seven","The Silence of the Lambs",
       
         "The Simpsons","Family Guy","Rick and Morty","South Park","BoJack Horseman","Arcane","Attack on Titan","Death Note","One Piece","Naruto",
-        "Dragon Ball Z","Pokémon","Avatar: The Last Airbender","The Big Bang Theory","How I Met Your Mother","Modern Family","Brooklyn Nine-Nine","Community","Parks and Recreation","Seinfeld"
+        "Dragon Ball Z","Pokémon","Avatar: The Last Airbender","The Big Bang Theory","How I Met Your Mother","Modern Family","Brooklyn Nine-Nine","Community","Parks and Recreation","Seinfeld",
+      
+        "House","Grey's Anatomy","Scrubs","ER","The Good Doctor","Dr. House","Chicago Fire","Chicago PD","Chicago Med","9-1-1",
+        "Suits","Mad Men","Billions","Succession","Industry","The Bear","Ted Lasso","Shrinking","Mythic Quest","Silicon Valley",
+      
+        "Sherlock","Luther","Dexter","Hannibal","Bates Motel","You","The Night Of","The Killing","Fargo","The Wire",
+        "Boardwalk Empire","Rome","Spartacus","The Tudors","The Borgias","Outlander","The Expanse","Westworld","Foundation","Silo",
+      
+        "Breaking Bad: Better Call Saul","The Punisher","Daredevil","Jessica Jones","Luke Cage","Iron Fist","Moon Knight","Loki","WandaVision","Hawkeye",
+        "The Falcon and the Winter Soldier","Echo","Ms. Marvel","She-Hulk","Secret Invasion","Andor","Obi-Wan Kenobi","Ahsoka","Boba Fett","Clone Wars",
+      
+        "Rocky","Creed","Rambo","Terminator","Terminator 2","Alien","Aliens","Predator","Blade Runner","Blade Runner 2049",
+        "Back to the Future","Indiana Jones","Mission Impossible","James Bond","Casino Royale","Skyfall","No Time to Die","Top Gun","Top Gun Maverick","Die Hard",
+      
+        "Home Alone","Forrest Gump","Cast Away","Saving Private Ryan","The Green Mile","American History X","The Pianist","Schindler's List","Life Is Beautiful","12 Angry Men",
+        "The Social Network","The Big Short","Moneyball","Spotlight","Argo","Heat","The Departed","Casino","Donnie Brasco","The Irishman",
+      
+        "Jaws","E.T.","Close Encounters","Jurassic Park","King Kong","Godzilla","Godzilla vs Kong","Pacific Rim","Cloverfield","War of the Worlds",
+      
+        "Saw","The Conjuring","Annabelle","Insidious","Hereditary","The Exorcist","It","It Chapter Two","A Quiet Place","The Ring",
+        "Scream","Halloween","Friday the 13th","Nightmare on Elm Street","The Blair Witch Project","Paranormal Activity","Sinister","The Babadook","Get Out","Us",
+      
+        "Toy Story 2","Toy Story 3","Toy Story 4","Cars","Cars 2","Cars 3","Monsters Inc","Monsters University","Finding Nemo","Finding Dory",
+        "Inside Out","Up","Coco","Ratatouille","Wall-E","The Incredibles","Incredibles 2","Turning Red","Soul","Luca",
+      
+        "Frozen","Frozen II","Moana","Tangled","Encanto","Beauty and the Beast","The Lion King","Aladdin","Mulan","Hercules",
+        "Kung Fu Panda","How to Train Your Dragon","Madagascar","Ice Age","The Croods","Megamind","Despicable Me","Minions","Shrek 2","Shrek Forever After",
+      
+        "One Punch Man","Demon Slayer","Jujutsu Kaisen","Bleach","Fullmetal Alchemist","Hunter x Hunter","Tokyo Ghoul","Chainsaw Man","Spy x Family","My Hero Academia",
+        "Neon Genesis Evangelion","Cowboy Bebop","Samurai Champloo","Steins;Gate","Code Geass","Akira","Your Name","Weathering With You","Spirited Away","Princess Mononoke",
+      
+        "Black Swan","Requiem for a Dream","The Truman Show","Eternal Sunshine of the Spotless Mind","Her","Lost in Translation","Drive","Nightcrawler","No Country for Old Men","There Will Be Blood",
+        "Birdman","The Revenant","Gravity","Children of Men","Arrival","Ex Machina","Annihilation","Moonlight","Manchester by the Sea","Call Me by Your Name",
+      
+        "Gossip Girl","The OC","90210","Pretty Little Liars","Riverdale","The Vampire Diaries","The Originals","Teen Wolf","Skins","Elite",
+        "Sex Education","Normal People","Bridgerton","Emily in Paris","Love","Master of None","Fleabag","The Marvelous Mrs. Maisel","Girls","Big Little Lies"
       ],
 
       "Animales": [
