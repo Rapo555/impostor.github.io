@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ruleta de Riesgo Actuarial</title>
+    <style>
+        :root { --primary: #2563eb; --danger: #ef4444; --success: #10b981; --dark: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; width: 100%; text-align: center; }
+        
+        /* Estilos de la Ruleta */
+        .roulette-box { position: relative; margin: 20px auto; width: 300px; height: 300px; }
+        #canvas { border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.2); transition: transform 3s cubic-bezier(0.1, 0, 0.2, 1); }
+        .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; 
+                   border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #333; z-index: 10; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .stat-card strong { display: block; color: var(--primary); font-size: 1.2rem; }
+
+        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; font-weight: 600; width: 100%; margin-top: 10px; }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+        
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 0.85rem; }
+        th { border-bottom: 2px solid #eee; padding: 8px; }
+        td { padding: 8px; border-bottom: 1px solid #f9f9f9; }
+        .death-row { background: #fee2e2; color: #b91c1c; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Simulador: Ruleta de Vida</h2>
+    <div class="stats-grid">
+        <div class="stat-card">Año Actual<strong id="yearLbl">1</strong></div>
+        <div class="stat-card">Riesgo (Roja)<strong id="riskLbl">5%</strong></div>
+        <div class="stat-card">Tasa<strong>5%</strong></div>
+    </div>
+
+    <div class="roulette-box">
+        <div class="pointer"></div>
+        <canvas id="canvas" width="300" height="300"></canvas>
+    </div>
+
+    <button id="spinBtn" onclick="girar()">Girar Ruleta - Año <span id="btnYear">1</span></button>
+    <button id="resetBtn" onclick="reset()" style="display:none; background:#64748b">Reiniciar</button>
+
+    <div id="msg" style="margin-top:15px; font-weight:bold; height:20px;"></div>
+
+    <table id="log">
+        <thead>
+            <tr><th>Año</th><th>Resultado</th><th>Valor Presente</th></tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+    </table>
+</div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let año = 1;
+    let finalizado = false;
+    let currentRotation = 0;
+
+    function drawRoulette() {
+        const total = 20;
+        const muerte = año;
+        const slice = (Math.PI * 2) / total;
+
+        ctx.clearRect(0,0,300,300);
+        
+        // Dibujar área de muerte (Rojo)
+        ctx.beginPath();
+        ctx.moveTo(150,150);
+        ctx.arc(150,150,145, -Math.PI/2, (-Math.PI/2) + (slice * muerte));
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+
+        // Dibujar área de vida (Verde)
+        ctx.beginPath();
+        ctx.moveTo(150,150);
+        ctx.arc(150,150,145, (-Math.PI/2) + (slice * muerte), (-Math.PI/2) + (Math.PI * 2));
+        ctx.fillStyle = '#10b981';
+        ctx.fill();
+
+        // Estética
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+
+    function girar() {
+        if(finalizado) return;
+        const btn = document.getElementById('spinBtn');
+        btn.disabled = true;
+
+        const extraDeg = Math.floor(Math.random() * 360) + 1440; // Mínimo 4 vueltas
+        currentRotation += extraDeg;
+        canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+        setTimeout(() => {
+            const finalAngle = (currentRotation % 360);
+            // Calculamos si cayó en la zona roja (que empieza en el tope -90deg)
+            const probMuerte = año / 20;
+            const normalizedAngle = (360 - (finalAngle % 360)) % 360;
+            const landInRed = normalizedAngle < (probMuerte * 360);
+
+            procesar(landInRed);
+        }, 3100);
+    }
+
+    function procesar(murio) {
+        const logBody = document.getElementById('logBody');
+        const row = logBody.insertRow(0);
+        
+        if (murio) {
+            finalizado = true;
+            const vp = 10000 / Math.pow(1.05, año);
+            row.className = "death-row";
+            row.innerHTML = `<td>${año}</td><td>MUERTE</td><td>$${vp.toLocaleString(undefined,{minimumFractionDigits:2})}</td>`;
+            document.getElementById('msg').innerText = "Fallecimiento detectado.";
+            document.getElementById('resetBtn').style.display = "block";
+        } else {
+            row.innerHTML = `<td>${año}</td><td>Sobrevive</td><td>-</td>`;
+            año++;
+            if(año > 20) {
+                 finalizado = true;
+                 document.getElementById('resetBtn').style.display = "block";
+            } else {
+                document.getElementById('spinBtn').disabled = false;
+                actualizarUI();
+            }
+        }
+    }
+
+    function actualizarUI() {
+        document.getElementById('yearLbl').innerText = año;
+        document.getElementById('riskLbl').innerText = (año/20*100).toFixed(0) + "%";
+        document.getElementById('btnYear').innerText = año;
+        drawRoulette();
+    }
+
+    function reset() {
+        año = 1; finalizado = false; currentRotation = 0;
+        canvas.style.transform = `rotate(0deg)`;
+        document.getElementById('logBody').innerHTML = "";
+        document.getElementById('resetBtn').style.display = "none";
+        document.getElementById('spinBtn').disabled = false;
+        document.getElementById('msg').innerText = "";
+        actualizarUI();
+    }
+
+    actualizarUI();
+</script>
+
+</body>
+</html>
