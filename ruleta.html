@@ -2,155 +2,181 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Ruleta de Riesgo Actuarial</title>
+    <title>Recurso Didáctico: Seguro de Vida</title>
     <style>
         :root { --primary: #2563eb; --danger: #ef4444; --success: #10b981; --dark: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; width: 100%; text-align: center; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; display: flex; justify-content: center; padding: 20px; color: var(--dark); }
+        .container { background: white; padding: 2rem; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 800px; width: 100%; text-align: center; }
         
-        /* Estilos de la Ruleta */
-        .roulette-box { position: relative; margin: 20px auto; width: 300px; height: 300px; }
-        #canvas { border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.2); transition: transform 3s cubic-bezier(0.1, 0, 0.2, 1); }
-        .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; 
-                   border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #333; z-index: 10; }
+        /* Dashboard de Simulación */
+        .dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
+        .panel { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0; }
+        .big-num { display: block; font-size: 1.8rem; font-weight: bold; color: var(--primary); }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
-        .stat-card strong { display: block; color: var(--primary); font-size: 1.2rem; }
-
-        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; font-weight: 600; width: 100%; margin-top: 10px; }
-        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+        /* Área Visual del Personaje */
+        .stage { position: relative; height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #fff; border-radius: 20px; margin: 10px 0; }
+        .emoji { font-size: 80px; transition: all 0.5s; z-index: 2; }
+        .years-badge { background: var(--dark); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; margin-bottom: 10px; }
         
-        table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 0.85rem; }
-        th { border-bottom: 2px solid #eee; padding: 8px; }
-        td { padding: 8px; border-bottom: 1px solid #f9f9f9; }
-        .death-row { background: #fee2e2; color: #b91c1c; font-weight: bold; }
+        /* Animación del Valor Presente */
+        .floating-value {
+            position: absolute; color: var(--success); font-weight: bold; font-size: 1.5rem;
+            opacity: 0; pointer-events: none; z-index: 3;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-120px); opacity: 0; }
+        }
+
+        /* Ruleta y Botones */
+        .roulette-container { position: relative; width: 200px; height: 200px; margin: 0 auto 20px; }
+        #canvas { border-radius: 50%; transition: transform 2.5s cubic-bezier(0.1, 0, 0.2, 1); width: 100%; height: 100%; }
+        .pointer { position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid #333; z-index: 10; }
+
+        button { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 12px; cursor: pointer; font-size: 1.1rem; font-weight: 600; width: 100%; }
+        button:disabled { background: #cbd5e1; }
+
+        /* Tabla de Historial */
+        .history-section { margin-top: 30px; text-align: left; }
+        .scroll-table { max-height: 200px; overflow-y: auto; border: 1px solid #eee; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { position: sticky; top: 0; background: #f1f5f9; padding: 10px; font-size: 0.8rem; }
+        td { padding: 8px 10px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Simulador: Ruleta de Vida</h2>
-    <div class="stats-grid">
-        <div class="stat-card">Año Actual<strong id="yearLbl">1</strong></div>
-        <div class="stat-card">Riesgo (Roja)<strong id="riskLbl">5%</strong></div>
-        <div class="stat-card">Tasa<strong>5%</strong></div>
+    <h2>Simulador de Valor Esperado (Tasa 5%)</h2>
+
+    <div class="dashboard">
+        <div class="panel">Simulaciones Completas<span class="big-num" id="totalSims">0</span></div>
+        <div class="panel">Promedio de VP<span class="big-num" id="avgVP">$0.00</span></div>
     </div>
 
-    <div class="roulette-box">
+    <div class="stage">
+        <div id="floatVal" class="floating-value">+$0,000</div>
+        <div class="years-badge">Años Sobrevividos: <span id="yearsCount">0</span></div>
+        <div id="charEmoji" class="emoji">😊</div>
+    </div>
+
+    <div class="roulette-container">
         <div class="pointer"></div>
-        <canvas id="canvas" width="300" height="300"></canvas>
+        <canvas id="canvas" width="200" height="200"></canvas>
     </div>
 
-    <button id="spinBtn" onclick="girar()">Girar Ruleta - Año <span id="btnYear">1</span></button>
-    <button id="resetBtn" onclick="reset()" style="display:none; background:#64748b">Reiniciar</button>
+    <button id="spinBtn" onclick="girar()">Girar Ruleta (Año <span id="btnYear">1</span>)</button>
+    <button id="resetBtn" onclick="resetSim()" style="display:none; background:#64748b; margin-top:10px;">Nueva Persona</button>
 
-    <div id="msg" style="margin-top:15px; font-weight:bold; height:20px;"></div>
-
-    <table id="log">
-        <thead>
-            <tr><th>Año</th><th>Resultado</th><th>Valor Presente</th></tr>
-        </thead>
-        <tbody id="logBody"></tbody>
-    </table>
+    <div class="history-section">
+        <h3>Historial de Simulaciones</h3>
+        <div class="scroll-table">
+            <table>
+                <thead>
+                    <tr><th>Sim #</th><th>Año Muerte</th><th>Valor Presente Pagado</th></tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-    let año = 1;
+    
+    // Estado de la persona actual
+    let añoActual = 1;
     let finalizado = false;
-    let currentRotation = 0;
+    let rotation = 0;
 
-    function drawRoulette() {
-        const total = 20;
-        const muerte = año;
-        const slice = (Math.PI * 2) / total;
+    // Estado global de estadísticas
+    let totalSimulaciones = 0;
+    let sumaVP = 0;
 
-        ctx.clearRect(0,0,300,300);
-        
-        // Dibujar área de muerte (Rojo)
-        ctx.beginPath();
-        ctx.moveTo(150,150);
-        ctx.arc(150,150,145, -Math.PI/2, (-Math.PI/2) + (slice * muerte));
-        ctx.fillStyle = '#ef4444';
-        ctx.fill();
-
-        // Dibujar área de vida (Verde)
-        ctx.beginPath();
-        ctx.moveTo(150,150);
-        ctx.arc(150,150,145, (-Math.PI/2) + (slice * muerte), (-Math.PI/2) + (Math.PI * 2));
-        ctx.fillStyle = '#10b981';
-        ctx.fill();
-
-        // Estética
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+    function draw() {
+        const slice = (Math.PI * 2) / 20;
+        ctx.clearRect(0,0,200,200);
+        // Rojo (Muerte)
+        ctx.beginPath(); ctx.moveTo(100,100);
+        ctx.arc(100,100,98, -Math.PI/2, -Math.PI/2 + (slice * añoActual));
+        ctx.fillStyle = '#ef4444'; ctx.fill();
+        // Verde (Vida)
+        ctx.beginPath(); ctx.moveTo(100,100);
+        ctx.arc(100,100,98, -Math.PI/2 + (slice * añoActual), -Math.PI/2 + (Math.PI*2));
+        ctx.fillStyle = '#10b981'; ctx.fill();
+        ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
     }
 
     function girar() {
         if(finalizado) return;
-        const btn = document.getElementById('spinBtn');
-        btn.disabled = true;
-
-        const extraDeg = Math.floor(Math.random() * 360) + 1440; // Mínimo 4 vueltas
-        currentRotation += extraDeg;
-        canvas.style.transform = `rotate(${currentRotation}deg)`;
+        document.getElementById('spinBtn').disabled = true;
+        
+        const extraDeg = Math.floor(Math.random() * 360) + 1080; 
+        rotation += extraDeg;
+        canvas.style.transform = `rotate(${rotation}deg)`;
 
         setTimeout(() => {
-            const finalAngle = (currentRotation % 360);
-            // Calculamos si cayó en la zona roja (que empieza en el tope -90deg)
-            const probMuerte = año / 20;
-            const normalizedAngle = (360 - (finalAngle % 360)) % 360;
-            const landInRed = normalizedAngle < (probMuerte * 360);
-
-            procesar(landInRed);
-        }, 3100);
-    }
-
-    function procesar(murio) {
-        const logBody = document.getElementById('logBody');
-        const row = logBody.insertRow(0);
-        
-        if (murio) {
-            finalizado = true;
-            const vp = 10000 / Math.pow(1.05, año);
-            row.className = "death-row";
-            row.innerHTML = `<td>${año}</td><td>MUERTE</td><td>$${vp.toLocaleString(undefined,{minimumFractionDigits:2})}</td>`;
-            document.getElementById('msg').innerText = "Fallecimiento detectado.";
-            document.getElementById('resetBtn').style.display = "block";
-        } else {
-            row.innerHTML = `<td>${año}</td><td>Sobrevive</td><td>-</td>`;
-            año++;
-            if(año > 20) {
-                 finalizado = true;
-                 document.getElementById('resetBtn').style.display = "block";
+            const normalizedAngle = (360 - (rotation % 360)) % 360;
+            const landInRed = normalizedAngle < (añoActual / 20 * 360);
+            
+            if (landInRed) {
+                morir();
             } else {
-                document.getElementById('spinBtn').disabled = false;
-                actualizarUI();
+                sobrevivir();
             }
-        }
+        }, 2600);
     }
 
-    function actualizarUI() {
-        document.getElementById('yearLbl').innerText = año;
-        document.getElementById('riskLbl').innerText = (año/20*100).toFixed(0) + "%";
-        document.getElementById('btnYear').innerText = año;
-        drawRoulette();
-    }
-
-    function reset() {
-        año = 1; finalizado = false; currentRotation = 0;
-        canvas.style.transform = `rotate(0deg)`;
-        document.getElementById('logBody').innerHTML = "";
-        document.getElementById('resetBtn').style.display = "none";
+    function sobrevivir() {
+        añoActual++;
+        document.getElementById('yearsCount').innerText = añoActual - 1;
+        document.getElementById('btnYear').innerText = añoActual;
         document.getElementById('spinBtn').disabled = false;
-        document.getElementById('msg').innerText = "";
-        actualizarUI();
+        draw();
     }
 
-    actualizarUI();
+    function morir() {
+        finalizado = true;
+        const vp = 10000 / Math.pow(1.05, añoActual);
+        
+        // Animaciones visuales
+        document.getElementById('charEmoji').innerText = "💀";
+        const floatVal = document.getElementById('floatVal');
+        floatVal.innerText = `+$${vp.toLocaleString(undefined, {minimumFractionDigits:2})}`;
+        floatVal.style.animation = "floatUp 2s forwards";
+
+        // Actualizar Estadísticas Globales
+        totalSimulaciones++;
+        sumaVP += vp;
+        
+        // Actualizar UI
+        document.getElementById('totalSims').innerText = totalSimulaciones;
+        document.getElementById('avgVP').innerText = `$${(sumaVP / totalSimulaciones).toLocaleString(undefined, {minimumFractionDigits:2})}`;
+        
+        // Agregar a la tabla
+        const row = document.getElementById('historyBody').insertRow(0);
+        row.innerHTML = `<td>${totalSimulaciones}</td><td>Año ${añoActual}</td><td>$${vp.toLocaleString()}</td>`;
+
+        document.getElementById('spinBtn').style.display = "none";
+        document.getElementById('resetBtn').style.display = "block";
+    }
+
+    function resetSim() {
+        añoActual = 1;
+        finalizado = false;
+        document.getElementById('charEmoji').innerText = "😊";
+        document.getElementById('yearsCount').innerText = "0";
+        document.getElementById('btnYear').innerText = "1";
+        document.getElementById('floatVal').style.animation = "none";
+        document.getElementById('spinBtn').style.display = "block";
+        document.getElementById('spinBtn').disabled = false;
+        document.getElementById('resetBtn').style.display = "none";
+        draw();
+    }
+
+    draw();
 </script>
 
 </body>
