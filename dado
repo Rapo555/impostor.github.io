@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador de Seguro de Vida - Dado 20</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; width: 100%; }
+        h1 { color: #2c3e50; text-align: center; }
+        .stats { display: flex; justify-content: space-between; margin-bottom: 20px; background: #ecf0f1; padding: 15px; border-radius: 8px; }
+        .dice-zone { text-align: center; margin: 20px 0; }
+        button { background: #3498db; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:disabled { background: #bdc3c7; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background: #34495e; color: white; }
+        .death { background-color: #e74c3c; color: white; font-weight: bold; }
+        .alive { color: #27ae60; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Simulador de Seguro</h1>
+    
+    <div class="stats">
+        <div><strong>Año Actual:</strong> <span id="year">1</span></div>
+        <div><strong>Tasa:</strong> 20%</div>
+        <div><strong>Beneficio:</strong> $10,000</div>
+    </div>
+
+    <div class="dice-zone">
+        <button id="rollBtn" onclick="jugarAño()">Lanzar Dado (Año <span id="btnYear">1</span>)</button>
+        <button id="resetBtn" onclick="reset()" style="background:#95a5a6; display:none;">Reiniciar</button>
+        <h2 id="diceResult" style="font-size: 40px; margin: 10px 0;">-</h2>
+        <p id="statusMsg"></p>
+    </div>
+
+    <table id="logTable">
+        <thead>
+            <tr>
+                <th>Año (k)</th>
+                <th>Dado</th>
+                <th>Resultado</th>
+                <th>Valor Presente</th>
+            </tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+    </table>
+</div>
+
+<script>
+    let añoActual = 1;
+    const pago = 10000;
+    const tasa = 0.20;
+    let finalizado = false;
+
+    function jugarAño() {
+        if(finalizado) return;
+
+        const resultadoDado = Math.floor(Math.random() * 20) + 1;
+        document.getElementById('diceResult').innerText = resultadoDado;
+        
+        const muere = resultadoDado <= añoActual;
+        const logBody = document.getElementById('logBody');
+        const row = logBody.insertRow();
+        
+        let vpText = "-";
+        let statusText = "Sobrevive";
+        let rowClass = "alive";
+
+        if (muere) {
+            const vp = pago / Math.pow(1 + tasa, añoActual);
+            vpText = "$" + vp.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            statusText = "FALLECIMIENTO";
+            rowClass = "death";
+            finalizado = true;
+            document.getElementById('rollBtn').disabled = true;
+            document.getElementById('resetBtn').style.display = "inline-block";
+            document.getElementById('statusMsg').innerHTML = `<strong>Fin del seguro. Pago realizado en el año ${añoActual}.</strong>`;
+        }
+
+        row.className = rowClass;
+        row.innerHTML = `<td>${añoActual}</td><td>${resultadoDado}</td><td>${statusText}</td><td>${vpText}</td>`;
+
+        if (!finalizado) {
+            añoActual++;
+            document.getElementById('year').innerText = añoActual;
+            document.getElementById('btnYear').innerText = añoActual;
+            if(añoActual > 20) {
+                document.getElementById('statusMsg').innerText = "Límite alcanzado.";
+            }
+        }
+    }
+
+    function reset() {
+        añoActual = 1;
+        finalizado = false;
+        document.getElementById('logBody').innerHTML = "";
+        document.getElementById('diceResult').innerText = "-";
+        document.getElementById('statusMsg').innerText = "";
+        document.getElementById('year').innerText = "1";
+        document.getElementById('btnYear').innerText = "1";
+        document.getElementById('rollBtn').disabled = false;
+        document.getElementById('resetBtn').style.display = "none";
+    }
+</script>
+
+</body>
+</html>
