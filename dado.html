@@ -2,46 +2,77 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Simulador de Seguro de Vida - Dado 20</title>
+    <title>Simulador Actuarial - Dado de 20 Caras</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; width: 100%; }
-        h1 { color: #2c3e50; text-align: center; }
-        .stats { display: flex; justify-content: space-between; margin-bottom: 20px; background: #ecf0f1; padding: 15px; border-radius: 8px; }
-        .dice-zone { text-align: center; margin: 20px 0; }
-        button { background: #3498db; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; }
-        button:disabled { background: #bdc3c7; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        th { background: #34495e; color: white; }
-        .death { background-color: #e74c3c; color: white; font-weight: bold; }
-        .alive { color: #27ae60; }
+        :root {
+            --primary: #2563eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --dark: #1e293b;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; color: var(--dark); display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 700px; width: 100%; }
+        
+        .header { text-align: center; margin-bottom: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: #f1f5f9; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9rem; }
+        .stat-card strong { display: block; font-size: 1.1rem; color: var(--primary); }
+
+        /* Estilo del Dado */
+        .dice-container { text-align: center; padding: 30px; background: radial-gradient(circle, #ffffff 0%, #e2e8f0 100%); border-radius: 12px; margin-bottom: 20px; position: relative; }
+        #diceDisplay { 
+            font-size: 64px; font-weight: bold; color: var(--dark); 
+            display: inline-block; width: 100px; height: 100px; line-height: 100px;
+            border: 4px solid var(--dark); border-radius: 15px; background: white;
+            transition: transform 0.1s;
+        }
+        .rolling { animation: shake 0.1s infinite; color: var(--primary) !important; border-color: var(--primary) !important; }
+
+        @keyframes shake {
+            0% { transform: translate(2px, 1px) rotate(0deg); }
+            50% { transform: translate(-1px, -2px) rotate(-1deg); }
+            100% { transform: translate(1px, 2px) rotate(1deg); }
+        }
+
+        button { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 600; width: 100%; transition: 0.3s; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 0.9rem; }
+        th { background: #f8fafc; border-bottom: 2px solid #e2e8f0; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        .row-death { background-color: #fee2e2; color: #b91c1c; font-weight: bold; }
+        .row-alive { color: #059669; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Simulador de Seguro</h1>
+    <div class="header">
+        <h1>Simulador de Seguro</h1>
+        <p>Si el dado es ≤ Año actual, se paga el seguro.</p>
+    </div>
     
-    <div class="stats">
-        <div><strong>Año Actual:</strong> <span id="year">1</span></div>
-        <div><strong>Tasa:</strong> 20%</div>
-        <div><strong>Beneficio:</strong> $10,000</div>
+    <div class="stats-grid">
+        <div class="stat-card">Año Actual<strong id="yearLabel">1</strong></div>
+        <div class="stat-card">Tasa Anual<strong>5%</strong></div>
+        <div class="stat-card">Suma Asegurada<strong>$10,000</strong></div>
     </div>
 
-    <div class="dice-zone">
-        <button id="rollBtn" onclick="jugarAño()">Lanzar Dado (Año <span id="btnYear">1</span>)</button>
-        <button id="resetBtn" onclick="reset()" style="background:#95a5a6; display:none;">Reiniciar</button>
-        <h2 id="diceResult" style="font-size: 40px; margin: 10px 0;">-</h2>
-        <p id="statusMsg"></p>
+    <div class="dice-container">
+        <div id="diceDisplay">20</div>
+        <p id="statusMsg" style="margin-top: 15px; font-weight: 500; min-height: 1.2em;"></p>
     </div>
+
+    <button id="rollBtn" onclick="simularLanzamiento()">Lanzar Dado (Año <span id="btnYear">1</span>)</button>
+    <button id="resetBtn" onclick="reset()" style="background:#64748b; margin-top: 10px; display:none;">Reiniciar Simulación</button>
 
     <table id="logTable">
         <thead>
             <tr>
-                <th>Año (k)</th>
+                <th>Año</th>
                 <th>Dado</th>
-                <th>Resultado</th>
+                <th>Estado</th>
                 <th>Valor Presente</th>
             </tr>
         </thead>
@@ -50,59 +81,78 @@
 </div>
 
 <script>
-    let añoActual = 1;
-    const pago = 10000;
-    const tasa = 0.20;
+    let año = 1;
+    const PAGO = 10000;
+    const TASA = 0.05; // 5%
     let finalizado = false;
 
-    function jugarAño() {
+    function simularLanzamiento() {
         if(finalizado) return;
-
-        const resultadoDado = Math.floor(Math.random() * 20) + 1;
-        document.getElementById('diceResult').innerText = resultadoDado;
         
-        const muere = resultadoDado <= añoActual;
-        const logBody = document.getElementById('logBody');
-        const row = logBody.insertRow();
-        
-        let vpText = "-";
-        let statusText = "Sobrevive";
-        let rowClass = "alive";
+        const btn = document.getElementById('rollBtn');
+        const dice = document.getElementById('diceDisplay');
+        btn.disabled = true;
+        dice.classList.add('rolling');
+        document.getElementById('statusMsg').innerText = "Lanzando...";
 
-        if (muere) {
-            const vp = pago / Math.pow(1 + tasa, añoActual);
-            vpText = "$" + vp.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            statusText = "FALLECIMIENTO";
-            rowClass = "death";
-            finalizado = true;
-            document.getElementById('rollBtn').disabled = true;
-            document.getElementById('resetBtn').style.display = "inline-block";
-            document.getElementById('statusMsg').innerHTML = `<strong>Fin del seguro. Pago realizado en el año ${añoActual}.</strong>`;
-        }
-
-        row.className = rowClass;
-        row.innerHTML = `<td>${añoActual}</td><td>${resultadoDado}</td><td>${statusText}</td><td>${vpText}</td>`;
-
-        if (!finalizado) {
-            añoActual++;
-            document.getElementById('year').innerText = añoActual;
-            document.getElementById('btnYear').innerText = añoActual;
-            if(añoActual > 20) {
-                document.getElementById('statusMsg').innerText = "Límite alcanzado.";
+        // Animación de 600ms
+        let iteraciones = 0;
+        const intervalo = setInterval(() => {
+            dice.innerText = Math.floor(Math.random() * 20) + 1;
+            iteraciones++;
+            if (iteraciones > 10) {
+                clearInterval(intervalo);
+                procesarResultado();
             }
+        }, 60);
+    }
+
+    function procesarResultado() {
+        const dice = document.getElementById('diceDisplay');
+        const resultado = Math.floor(Math.random() * 20) + 1;
+        
+        dice.classList.remove('rolling');
+        dice.innerText = resultado;
+
+        const muere = resultado <= año;
+        const logBody = document.getElementById('logBody');
+        const row = logBody.insertRow(0); // Insertar arriba para ver lo más nuevo
+        
+        if (muere) {
+            finalizado = true;
+            const vp = PAGO / Math.pow(1 + TASA, año);
+            
+            row.className = "row-death";
+            row.innerHTML = `<td>${año}</td><td>${resultado}</td><td>FALLECIMIENTO</td><td>$${vp.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>`;
+            
+            document.getElementById('statusMsg').innerHTML = `<span style="color:var(--danger)">Muerte en año ${año}. Pago efectuado.</span>`;
+            document.getElementById('resetBtn').style.display = "block";
+        } else {
+            row.className = "row-alive";
+            row.innerHTML = `<td>${año}</td><td>${resultado}</td><td>Sobrevive</td><td>-</td>`;
+            
+            document.getElementById('statusMsg').innerHTML = `<span style="color:var(--success)">¡Sobrevivió al año ${año}!</span>`;
+            año++;
+            actualizarUI();
+            document.getElementById('rollBtn').disabled = false;
         }
     }
 
+    function actualizarUI() {
+        document.getElementById('yearLabel').innerText = año;
+        document.getElementById('btnYear').innerText = año;
+        if(año > 20) finalizado = true;
+    }
+
     function reset() {
-        añoActual = 1;
+        año = 1;
         finalizado = false;
         document.getElementById('logBody').innerHTML = "";
-        document.getElementById('diceResult').innerText = "-";
+        document.getElementById('diceDisplay').innerText = "20";
         document.getElementById('statusMsg').innerText = "";
-        document.getElementById('year').innerText = "1";
-        document.getElementById('btnYear').innerText = "1";
-        document.getElementById('rollBtn').disabled = false;
         document.getElementById('resetBtn').style.display = "none";
+        document.getElementById('rollBtn').disabled = false;
+        actualizarUI();
     }
 </script>
 
