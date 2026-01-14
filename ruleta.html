@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Recurso Didáctico: Seguro de Vida</title>
+    <title>Simulador de Valor Esperado - Didáctico</title>
     <style>
         :root { --primary: #2563eb; --danger: #ef4444; --success: #10b981; --dark: #1e293b; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; display: flex; justify-content: center; padding: 20px; color: var(--dark); }
-        .container { background: white; padding: 2rem; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 800px; width: 100%; text-align: center; }
+        .container { background: white; padding: 2rem; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 600px; width: 100%; text-align: center; }
         
         /* Dashboard de Simulación */
         .dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
@@ -14,50 +14,51 @@
         .big-num { display: block; font-size: 1.8rem; font-weight: bold; color: var(--primary); }
 
         /* Área Visual del Personaje */
-        .stage { position: relative; height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #fff; border-radius: 20px; margin: 10px 0; }
-        .emoji { font-size: 80px; transition: all 0.5s; z-index: 2; }
-        .years-badge { background: var(--dark); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; margin-bottom: 10px; }
+        .stage { position: relative; height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #fff; border-radius: 20px; margin: 10px 0; }
+        
+        /* Número de años grande */
+        .year-display { font-size: 5rem; font-weight: 800; color: #e2e8f0; position: absolute; top: 10px; z-index: 1; transition: all 0.3s; }
+        .emoji { font-size: 100px; transition: all 0.5s; z-index: 2; position: relative; margin-top: 40px; }
         
         /* Animación del Valor Presente */
         .floating-value {
-            position: absolute; color: var(--success); font-weight: bold; font-size: 1.5rem;
-            opacity: 0; pointer-events: none; z-index: 3;
+            position: absolute; color: var(--success); font-weight: bold; font-size: 2rem;
+            opacity: 0; pointer-events: none; z-index: 3; text-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
         }
         @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 0; }
-            20% { opacity: 0.8; }
+            0% { transform: translateY(20px); opacity: 0; }
+            20% { opacity: 1; }
             100% { transform: translateY(-120px); opacity: 0; }
         }
 
         /* Ruleta y Botones */
-        .roulette-container { position: relative; width: 200px; height: 200px; margin: 0 auto 20px; }
+        .roulette-container { position: relative; width: 180px; height: 180px; margin: 0 auto 25px; }
         #canvas { border-radius: 50%; transition: transform 2.5s cubic-bezier(0.1, 0, 0.2, 1); width: 100%; height: 100%; }
         .pointer { position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid #333; z-index: 10; }
 
-        button { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 12px; cursor: pointer; font-size: 1.1rem; font-weight: 600; width: 100%; }
-        button:disabled { background: #cbd5e1; }
+        button { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; cursor: pointer; font-size: 1.1rem; font-weight: 600; width: 100%; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+        button:disabled { background: #cbd5e1; box-shadow: none; }
+        #resetBtn { background: var(--dark); }
 
-        /* Tabla de Historial */
+        /* Historial */
         .history-section { margin-top: 30px; text-align: left; }
-        .scroll-table { max-height: 200px; overflow-y: auto; border: 1px solid #eee; border-radius: 10px; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th { position: sticky; top: 0; background: #f1f5f9; padding: 10px; font-size: 0.8rem; }
-        td { padding: 8px 10px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.9rem; }
+        .scroll-table { max-height: 180px; overflow-y: auto; border-radius: 12px; border: 1px solid #f1f5f9; }
+        table { width: 100%; border-collapse: collapse; }
+        th { position: sticky; top: 0; background: #f8fafc; padding: 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid #eee; }
+        td { padding: 10px; border-bottom: 1px solid #f1f5f9; text-align: center; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Simulador de Valor Esperado (Tasa 5%)</h2>
-
     <div class="dashboard">
-        <div class="panel">Simulaciones Completas<span class="big-num" id="totalSims">0</span></div>
-        <div class="panel">Promedio de VP<span class="big-num" id="avgVP">$0.00</span></div>
+        <div class="panel">Simulaciones<span class="big-num" id="totalSims">0</span></div>
+        <div class="panel">VP Promedio<span class="big-num" id="avgVP">$0.00</span></div>
     </div>
 
     <div class="stage">
-        <div id="floatVal" class="floating-value">+$0,000</div>
-        <div class="years-badge">Años Sobrevividos: <span id="yearsCount">0</span></div>
+        <div id="floatVal" class="floating-value"></div>
+        <div class="year-display" id="yearsCount">0</div>
         <div id="charEmoji" class="emoji">😊</div>
     </div>
 
@@ -67,14 +68,13 @@
     </div>
 
     <button id="spinBtn" onclick="girar()">Girar Ruleta (Año <span id="btnYear">1</span>)</button>
-    <button id="resetBtn" onclick="resetSim()" style="display:none; background:#64748b; margin-top:10px;">Nueva Persona</button>
+    <button id="resetBtn" onclick="resetSim()" style="display:none; margin-top:10px;">Nueva Persona</button>
 
     <div class="history-section">
-        <h3>Historial de Simulaciones</h3>
         <div class="scroll-table">
             <table>
                 <thead>
-                    <tr><th>Sim #</th><th>Año Muerte</th><th>Valor Presente Pagado</th></tr>
+                    <tr><th>Sim #</th><th>Muerte (Año)</th><th>Valor Pagado</th></tr>
                 </thead>
                 <tbody id="historyBody"></tbody>
             </table>
@@ -86,23 +86,20 @@
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     
-    // Estado de la persona actual
     let añoActual = 1;
     let finalizado = false;
     let rotation = 0;
-
-    // Estado global de estadísticas
     let totalSimulaciones = 0;
     let sumaVP = 0;
 
     function draw() {
         const slice = (Math.PI * 2) / 20;
         ctx.clearRect(0,0,200,200);
-        // Rojo (Muerte)
+        // Zona Roja (Muerte)
         ctx.beginPath(); ctx.moveTo(100,100);
         ctx.arc(100,100,98, -Math.PI/2, -Math.PI/2 + (slice * añoActual));
         ctx.fillStyle = '#ef4444'; ctx.fill();
-        // Verde (Vida)
+        // Zona Verde (Vida)
         ctx.beginPath(); ctx.moveTo(100,100);
         ctx.arc(100,100,98, -Math.PI/2 + (slice * añoActual), -Math.PI/2 + (Math.PI*2));
         ctx.fillStyle = '#10b981'; ctx.fill();
@@ -113,7 +110,7 @@
         if(finalizado) return;
         document.getElementById('spinBtn').disabled = true;
         
-        const extraDeg = Math.floor(Math.random() * 360) + 1080; 
+        const extraDeg = Math.floor(Math.random() * 360) + 1440; 
         rotation += extraDeg;
         canvas.style.transform = `rotate(${rotation}deg)`;
 
@@ -130,8 +127,9 @@
     }
 
     function sobrevivir() {
+        document.getElementById('yearsCount').innerText = añoActual;
+        document.getElementById('yearsCount').style.color = '#cbd5e1';
         añoActual++;
-        document.getElementById('yearsCount').innerText = añoActual - 1;
         document.getElementById('btnYear').innerText = añoActual;
         document.getElementById('spinBtn').disabled = false;
         draw();
@@ -141,23 +139,23 @@
         finalizado = true;
         const vp = 10000 / Math.pow(1.05, añoActual);
         
-        // Animaciones visuales
+        // UI
+        document.getElementById('yearsCount').innerText = añoActual;
+        document.getElementById('yearsCount').style.color = '#fecaca';
         document.getElementById('charEmoji').innerText = "💀";
+        
         const floatVal = document.getElementById('floatVal');
         floatVal.innerText = `+$${vp.toLocaleString(undefined, {minimumFractionDigits:2})}`;
-        floatVal.style.animation = "floatUp 2s forwards";
+        floatVal.style.animation = "floatUp 2.5s ease-out forwards";
 
-        // Actualizar Estadísticas Globales
+        // Stats
         totalSimulaciones++;
         sumaVP += vp;
-        
-        // Actualizar UI
         document.getElementById('totalSims').innerText = totalSimulaciones;
         document.getElementById('avgVP').innerText = `$${(sumaVP / totalSimulaciones).toLocaleString(undefined, {minimumFractionDigits:2})}`;
         
-        // Agregar a la tabla
         const row = document.getElementById('historyBody').insertRow(0);
-        row.innerHTML = `<td>${totalSimulaciones}</td><td>Año ${añoActual}</td><td>$${vp.toLocaleString()}</td>`;
+        row.innerHTML = `<td>${totalSimulaciones}</td><td>Año ${añoActual}</td><td>$${vp.toLocaleString(undefined, {minimumFractionDigits:2})}</td>`;
 
         document.getElementById('spinBtn').style.display = "none";
         document.getElementById('resetBtn').style.display = "block";
@@ -168,8 +166,13 @@
         finalizado = false;
         document.getElementById('charEmoji').innerText = "😊";
         document.getElementById('yearsCount').innerText = "0";
+        document.getElementById('yearsCount').style.color = '#e2e8f0';
         document.getElementById('btnYear').innerText = "1";
-        document.getElementById('floatVal').style.animation = "none";
+        
+        const floatVal = document.getElementById('floatVal');
+        floatVal.style.animation = "none";
+        floatVal.offsetHeight; // trigger reflow
+        
         document.getElementById('spinBtn').style.display = "block";
         document.getElementById('spinBtn').disabled = false;
         document.getElementById('resetBtn').style.display = "none";
